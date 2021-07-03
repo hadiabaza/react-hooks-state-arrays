@@ -3,16 +3,55 @@ import { spicyFoods, getNewSpicyFood } from "../data";
 
 function SpicyFoodList() {
   const [foods, setFoods] = useState(spicyFoods);
+  const [filterBy, setFilterBy] = useState("All");
 
   function handleAddFood() {
     const newFood = getNewSpicyFood();
+    const newFoodArray = [...foods, newFood];
+    setFoods(newFoodArray);
     console.log(newFood);
   }
+  function handleChangeFilter(event) {
+    console.log(event.target.value);
+    setFilterBy(event.target.value);
+  }
+
+  const foodsToDisplay = foods.filter((food) => {
+    if (filterBy === "All") {
+      return true;
+    } else {
+      return food.cuisine === filterBy;
+    }
+  });
+  function handleLiClick(id) {
+    console.log("clicked");
+    // const newFoodArray = foods.filter((food) => food.id !== id);
+    const newFoodArray = foods.map((food) => {
+      if (food.id === id) {
+        return { ...food, heatLevel: food.heatLevel + 1 };
+      } else {
+        return food;
+      }
+    });
+    setFoods(newFoodArray);
+  }
+  const FoodList = foodsToDisplay.map((food) => (
+    <li key={food.id} onClick={() => handleLiClick(food.id)}>
+      Name: {food.name} | Cuisine: {food.cuisine} | Heat: {food.heatLevel}
+    </li>
+  ));
 
   return (
     <div>
       <button onClick={handleAddFood}>Add New Food</button>
-      <ul>{/* list of spicy foods */}</ul>
+      <ul>{FoodList}</ul>
+      <select onChange={handleChangeFilter} name="filter">
+        <option value="All">All</option>
+        <option value="American">American</option>
+        <option value="Sichuan">Sichuan</option>
+        <option value="Thai">Thai</option>
+        <option value="Mexican">Mexican</option>
+      </select>
     </div>
   );
 }
